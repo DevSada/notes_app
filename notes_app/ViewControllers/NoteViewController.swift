@@ -8,31 +8,43 @@
 import UIKit
 
 
-struct noteStyle {
-    var styleStart: Int
-    var styleEnd: Int
-    var styleFont: UIFont
+
+
+protocol NoteDelegate: AnyObject {
+    func reloadAllNotesTable() 
 }
 
-class NoteViewController: UIViewController {
 
+class NoteViewController: UIViewController {
+    
     
     var safeArea: UILayoutGuide!
     var noteTextView: UITextView!
-    var noteText: String!
-    var noteStylesArray: [noteStyle] = []
+    var noteType: NoteViewType!
+    var noteIndex: Int!
+    
+    weak var noteDelegate: NoteDelegate?
+    
+    //   var noteText: String!
+    // var noteStylesArray: [noteStyle] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        loadNoteData()
+        
         
         safeArea = view.safeAreaLayoutGuide
         self.view.translatesAutoresizingMaskIntoConstraints = false
         
+        
+        if noteType == .add {
+            addNote(note: "")
+            noteIndex = notesList.count - 1
+        }
+        
         noteTextView = getTextView()
         self.view.addSubview(noteTextView)
+        noteTextView.becomeFirstResponder()
         NSLayoutConstraint.activate(getTextFieldContraints(to: noteTextView))
         
         noteTextView.delegate = self
@@ -49,17 +61,23 @@ class NoteViewController: UIViewController {
         
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        if noteTextView.text == "" {
+            removeNote(at: noteIndex)
+        }
+        noteDelegate?.reloadAllNotesTable()
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        
         self.view.endEditing(true) //hiding keyboard for any object
     }
     
     private func getTextView() -> UITextView {
         let textView = UITextView(frame: .zero)
-        textView.text = noteText
-        textView.backgroundColor = .blue
-        textView.textColor = .red
+        textView.text = notesList[noteIndex]
+        textView.backgroundColor = .white
+        textView.textColor = .gray
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.sizeToFit()
         textView.dataDetectorTypes = UIDataDetectorTypes.all
@@ -67,32 +85,18 @@ class NoteViewController: UIViewController {
         textView.autocorrectionType = .yes
         return textView
     }
-
+    
     private func getTextFieldContraints(to textField: UITextView) -> [NSLayoutConstraint] {
         let constraints = [
             textField.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: 16),
             textField.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -16),
-            textField.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 0),
+            textField.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 16),
             textField.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: 0)
         ]
         return constraints
     }
     
-    private func saveNoteData() {
-
-        let noteText = [self.noteTextView.text]
-        UserDefaults.standard.set(noteText, forKey: "noteText")
-        UserDefaults.standard.set(noteStylesArray, forKey: "noteStylesArray")
-        UserDefaults.standard.synchronize()
-    }
-    
-    private func loadNoteData() {
-        let noteText = UserDefaults.standard.array(forKey: "noteText")
-        self.noteText = noteText?[0] as? String
-        UserDefaults.standard.array(forKey: "noteStylesArray")
-    }
-    
-    @objc func updateTextView(notification: Notification) {
+    @objc func updateTextView(notification: Notification) { // keyboard moving
         guard let userInfo = notification.userInfo as? [String: Any],
               let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
         else {
@@ -108,23 +112,23 @@ class NoteViewController: UIViewController {
         
         noteTextView.scrollRangeToVisible(noteTextView.selectedRange)
     }
-  
-
+    
+    
 }
 
 extension NoteViewController: UITextViewDelegate {
     
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        textView.backgroundColor = .white
-        textView.textColor = .gray
-    }
-    
-    func textViewDidEndEditing(_ textView: UITextView) {
-     //   saveNoteData()
-    }
+    //    func textViewDidBeginEditing(_ textView: UITextView) {
+    //        textView.backgroundColor = .white
+    //        textView.textColor = .gray
+    //    }
+    //
+    //    func textViewDidEndEditing(_ textView: UITextView) {
+    //     //   saveNoteData()
+    //    }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        saveNoteData()
+        changeNote(at: noteIndex, change: noteTextView.text)
         return true
     }
 }
