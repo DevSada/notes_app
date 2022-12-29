@@ -22,12 +22,7 @@ class NoteViewController: UIViewController {
     var noteTextView: UITextView!
     var noteType: NoteViewType!
     var noteIndex: Int!
-    
     weak var noteDelegate: NoteDelegate?
-    
-    //   var noteText: String!
-    // var noteStylesArray: [noteStyle] = []
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,7 +33,8 @@ class NoteViewController: UIViewController {
         
         
         if noteType == .add {
-            addNote(note: "")
+            let emptyNote = Note(noteText: "", noteStyle: nil)
+            addNote(note: emptyNote)
             noteIndex = notesList.count - 1
         }
         
@@ -75,7 +71,7 @@ class NoteViewController: UIViewController {
     
     private func getTextView() -> UITextView {
         let textView = UITextView(frame: .zero)
-        textView.text = notesList[noteIndex]
+        textView.text = notesList[noteIndex].noteText
         textView.backgroundColor = .white
         textView.textColor = .gray
         textView.translatesAutoresizingMaskIntoConstraints = false

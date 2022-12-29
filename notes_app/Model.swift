@@ -9,43 +9,32 @@ import UIKit
 
 struct Note {
     var noteText: String
+    var noteStyle: [NoteStyle]?
+}
+
+struct NoteStyle {
     var styleStart: Int
     var styleEnd: Int
-    var styleFont: UIFont
+    var styleFont: UIFont // bold italic underline
+}
+
+struct AppFontName {
+    static let regular = "CourierNewPSMT"
+    static let bold = "CourierNewPS-BoldMT"
+    static let italic = "CourierNewPS-ItalicMT"
 }
 
 enum NoteViewType: CaseIterable {
     case add, edit
 }
 
-var notesList = [String]()
+var notesList = [Note]()
 
-func addNote(note: String) {
-    notesList.append(note)
-    
-    saveNotesData()
-}
+let italicFont = [
+    NSAttributedString.Key.font : UIFont.init(name: AppFontName.italic, size: 14),
+    NSAttributedString.Key.foregroundColor : UIColor.gray
+]
 
-func removeNote(at index: Int) {
-    notesList.remove(at: index)
-    saveNotesData()
-}
 
-func changeNote(at index: Int, change newNote: String) {
-    notesList[index] = newNote
-    saveNotesData()
-}
 
-func saveNotesData() {
-    UserDefaults.standard.set(notesList, forKey: "notesList")
-    UserDefaults.standard.synchronize()
-}
-
-func loadNotesData() {
-    if let list = UserDefaults.standard.array(forKey: "notesList") as? [String] {
-        notesList = list
-    } else {
-        notesList = []
-    }
-}
 
