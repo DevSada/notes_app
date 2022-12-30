@@ -16,14 +16,6 @@ class AllNotesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        var str = " sdfsd fdsf dsf dsf sdf sf sd s w332332 32 e23e23d 23d 23 2"
-        //notesList[index]
-        var charPosition = 0
-        for char in str {
-            charPosition += 1
-            print(char)
-        }
-        
         safeArea = view.safeAreaLayoutGuide
         self.view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -111,7 +103,7 @@ extension AllNotesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = allNotesTableView.dequeueReusableCell(withIdentifier: "noteCell", for: indexPath)
         cell.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cellTap)))
-        cell.textLabel?.text = notesList[indexPath.row].noteText
+        cell.textLabel?.text = notesList[indexPath.row]
         return cell
     }
     

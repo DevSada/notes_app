@@ -7,8 +7,8 @@
 
 import UIKit
 
-struct Note {
-    var noteText: String
+class Note {
+    var noteText: String?
     var noteStyle: [NoteStyle]?
 }
 
@@ -28,13 +28,9 @@ enum NoteViewType: CaseIterable {
     case add, edit
 }
 
-var notesList = [Note]()
+var notesList =  [String]()//[Note]()
 
 let italicFont = [
     NSAttributedString.Key.font : UIFont.init(name: AppFontName.italic, size: 14),
     NSAttributedString.Key.foregroundColor : UIColor.gray
 ]
-
-
-
-

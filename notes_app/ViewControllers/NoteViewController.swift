@@ -33,8 +33,7 @@ class NoteViewController: UIViewController {
         
         
         if noteType == .add {
-            let emptyNote = Note(noteText: "", noteStyle: nil)
-            addNote(note: emptyNote)
+            addNote(note: "")
             noteIndex = notesList.count - 1
         }
         
@@ -71,7 +70,7 @@ class NoteViewController: UIViewController {
     
     private func getTextView() -> UITextView {
         let textView = UITextView(frame: .zero)
-        textView.text = notesList[noteIndex].noteText
+        textView.text = notesList[noteIndex]
         textView.backgroundColor = .white
         textView.textColor = .gray
         textView.translatesAutoresizingMaskIntoConstraints = false
